@@ -145,6 +145,7 @@ class VkDownloader:
 
     def load(self, user, path):
         access_token, current_user_id = self.auth()
+        uid = user or self.user_id
 
         tracks = self.get_tracks_metadata(uid)
 
