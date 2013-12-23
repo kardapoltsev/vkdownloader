@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import argparse, argcomplete
+import argparse
 import json, sys, os
 from vkdownloader import VkDownloader
 
@@ -42,7 +42,11 @@ music.add_argument("-d", "--dest", help = "destination directory for music downl
 topParser.add_argument("-u", "--user", help = "user id")
 music.set_defaults(func = process_music)
 
-argcomplete.autocomplete(topParser)
+try:
+    import argcomplete
+    argcomplete.autocomplete(topParser)
+except ImportError:
+    pass
 
 args = topParser.parse_args()
 
