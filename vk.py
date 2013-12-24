@@ -19,10 +19,12 @@ import json, sys, os
 from vkdownloader import VkDownloader
 
 def process_music(args):
-	if args.action == "load":
-		vk.load(args.user, args.dest)
-	elif args.action == "show":
-		vk.show(args.user)
+  if args.action == "load":
+    vk.load(args.user, args.dest)
+  elif args.action == "show":
+    vk.show(args.user)
+  elif args.action == "play": 
+    vk.play(args.user)
 
 def process_friends(args):
   if args.action == "show":
@@ -37,7 +39,7 @@ friends = subParsers.add_parser("friends", description = "working with friends")
 friends.add_argument("action", help = "friends actions", choices=["show"])
 friends.set_defaults(func = process_friends)
 
-music.add_argument("action", help = "music actions", choices=["show", "load"])
+music.add_argument("action", help = "music actions", choices=["show", "load", "play"])
 music.add_argument("-d", "--dest", help = "destination directory for music download, default is current dir")
 topParser.add_argument("-u", "--user", help = "user id")
 music.set_defaults(func = process_music)

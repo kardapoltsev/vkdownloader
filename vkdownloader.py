@@ -87,14 +87,15 @@ class VkDownloader:
      
      
     def get_tracks_metadata(self, user_id):
-        url = BASE_URL + "audio.get.json?uid={uid}&access_token={atoken}".format(
-                uid = user_id, atoken = self.access_token)
-        response = request.urlopen(url)
-        audio_get_page = response.read().decode("utf-8")
-        return json.loads(audio_get_page)['response']
-     
+        url = "audio.get.json?uid={uid}".format(uid = user_id)
+        return self._call_api(url)
+
      
     def get_track_full_name(self, t_data):
+        self._get_track_name(t_data) + ".mp3"
+
+
+    def _get_track_name(self, t_data):
         html_parser = HTMLParser()
         full_name = "{0}_{1}".format(
             html_parser.unescape(t_data['artist'][:100]).strip(),
@@ -102,14 +103,16 @@ class VkDownloader:
         )
         full_name = re.sub('[' + FORBIDDEN_CHARS + ']', "", full_name)
         full_name = re.sub(' +', ' ', full_name)
-        return full_name + ".mp3"
-     
+        return full_name
+
+
      
     def download_track(self, t_url, t_name):
         t_path = os.path.join(self.destination, t_name)
         if not os.path.exists(t_path):
             request.urlretrieve(t_url, t_path)
     
+
     def auth(self):
         access_token, current_user_id = self.get_saved_auth_params()
 
@@ -119,11 +122,9 @@ class VkDownloader:
 
 		
     def get_friends(self, user_id):
-        url = BASE_URL + "friends.get.json?fields=uid,first_name,last_name&uid={uid}&access_token={atoken}".format(
-                uid = user_id or self.user_id, atoken = self.access_token)
-        response = request.urlopen(url)
-        audio_get_page = response.read().decode("utf-8")
-        return json.loads(audio_get_page)['response']
+        url = "friends.get.json?fields=uid,first_name,last_name&uid={uid}".format(
+                uid = user_id or self.user_id)
+        return _call_api(url)
       
     
     def show_friends(self, user_id):
@@ -165,3 +166,37 @@ class VkDownloader:
             self.download_track(t['url'], t_name)
         print("All music is up to date")
      
+
+    def _create_playlist(self, tracks):
+        playlist = []
+
+        playlist.append('#EXTM3U')
+
+        for t in tracks:
+            playlist.append("#EXTINF: {},{}".format(t['duration'], self._get_track_name(t)))
+            playlist.append(t['url'] + "\n")
+        
+        return playlist
+
+
+    def save_playlist(self, playlist, filename):
+        with open(filename, 'w') as f:
+            for l in playlist:
+                print(l, file=f)
+
+
+    def play(self, user_id):
+        tracks = user_id or self.get_tracks_metadata(self.user_id)
+        playlist = self._create_playlist(tracks)
+        self.save_playlist(playlist, "vk.m3u")
+
+
+    def _call_api(self, req):
+        self.auth()
+        #assume, that url has params, so add additional params after &
+        url = BASE_URL + req + "&access_token={atoken}".format(atoken = self.access_token)
+        response = request.urlopen(url)
+        jsonStr = response.read().decode("utf-8")
+        return json.loads(jsonStr)['response']
+
+
