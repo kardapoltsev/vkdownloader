@@ -20,8 +20,10 @@ import json
 import urllib
 from urllib import request
 from html.parser import HTMLParser
+from subprocess import call
 import re
 import os
+import tempfile
 from urllib import parse
 from datetime import datetime, timedelta
 
@@ -183,12 +185,15 @@ class VkDownloader:
         with open(filename, 'w') as f:
             for l in playlist:
                 print(l, file=f)
+        return filename
 
 
     def play(self, user_id):
         tracks = user_id or self.get_tracks_metadata(self.user_id)
         playlist = self._create_playlist(tracks)
-        self.save_playlist(playlist, "vk.m3u")
+        playlist_file = self.save_playlist(playlist, tempfile.mkstemp()[1])
+        call(["mplayer", "-playlist", playlist_file])
+        
 
 
     def _call_api(self, req):
