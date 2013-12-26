@@ -94,12 +94,12 @@ class VkDownloader:
 
      
     def get_track_full_name(self, t_data):
-        self._get_track_name(t_data) + ".mp3"
+        return self._get_track_name(t_data) + ".mp3"
 
 
     def _get_track_name(self, t_data):
         html_parser = HTMLParser()
-        full_name = "{0}_{1}".format(
+        full_name = "{0} - {1}".format(
             html_parser.unescape(t_data['artist'][:100]).strip(),
             html_parser.unescape(t_data['title'][:100]).strip(),
         )
