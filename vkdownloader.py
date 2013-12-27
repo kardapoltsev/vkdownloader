@@ -67,7 +67,12 @@ class VkDownloader:
      
      
     def save_auth_params(self, access_token, expires_in, user_id):
-        expires = datetime.now() + timedelta(seconds=int(expires_in))
+        td = timedelta(seconds=int(expires_in))
+        #if we got offline token expires_in will be 0, so set expires in 5 years
+        if(int(expires_in) == 0):
+            td = timedelta(days = 5*365)
+
+        expires = datetime.now() + td
         with open(self.auth_file, 'wb') as output:
             pickle.dump(access_token, output)
             pickle.dump(expires, output)
@@ -76,7 +81,7 @@ class VkDownloader:
      
     def get_auth_params(self):
         auth_url = ("https://oauth.vk.com/authorize?client_id={app_id}"
-            "&scope=audio&redirect_uri=http://oauth.vk.com/blank.html"
+            "&scope=audio,friends,offline&redirect_uri=http://oauth.vk.com/blank.html"
             "&display=page&response_type=token".format(app_id=APP_ID))
         webbrowser.open_new_tab(auth_url)
         redirected_url = input("Paste here url you where redirected:\n")
@@ -100,8 +105,8 @@ class VkDownloader:
     def _get_track_name(self, t_data):
         html_parser = HTMLParser()
         full_name = "{0} - {1}".format(
-            html_parser.unescape(t_data['artist'][:100]).strip(),
-            html_parser.unescape(t_data['title'][:100]).strip(),
+            html_parser.unescape(t_data['artist'])[:50].strip(),
+            html_parser.unescape(t_data['title'])[:50].strip(),
         )
         full_name = re.sub('[' + FORBIDDEN_CHARS + ']', "", full_name)
         full_name = re.sub(' +', ' ', full_name)
@@ -126,7 +131,7 @@ class VkDownloader:
     def get_friends(self, user_id):
         url = "friends.get.json?fields=uid,first_name,last_name&uid={uid}".format(
                 uid = user_id or self.user_id)
-        return _call_api(url)
+        return self._call_api(url)
       
     
     def show_friends(self, user_id):
