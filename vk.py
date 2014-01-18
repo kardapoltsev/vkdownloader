@@ -32,16 +32,16 @@ def process_friends(args):
 
 topParser = argparse.ArgumentParser()
 
+topParser.add_argument("-u", "--user", help = "user id")
 subParsers = topParser.add_subparsers(title = "Command categories")
 music = subParsers.add_parser("music", description = "working with music")
 friends = subParsers.add_parser("friends", description = "working with friends")
 
-friends.add_argument("action", help = "friends actions", choices=["show"])
+friends.add_argument("action", help = "friends actions", choices=["list"])
 friends.set_defaults(func = process_friends)
 
-music.add_argument("action", help = "music actions", choices=["show", "load", "play"])
+music.add_argument("action", help = "music actions", choices=["list", "load", "play"])
 music.add_argument("-d", "--dest", help = "destination directory for music download, default is current dir")
-topParser.add_argument("-u", "--user", help = "user id")
 music.set_defaults(func = process_music)
 
 try:
