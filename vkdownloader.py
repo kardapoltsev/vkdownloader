@@ -23,6 +23,7 @@ from html.parser import HTMLParser
 from subprocess import call
 import re
 import os
+import sys
 import tempfile
 from urllib import parse
 from datetime import datetime, timedelta
@@ -206,7 +207,15 @@ class VkDownloader:
         #assume, that url has params, so add additional params after &
         url = BASE_URL + req + "&access_token={atoken}".format(atoken = self.access_token)
         response = request.urlopen(url)
-        jsonStr = response.read().decode("utf-8")
-        return json.loads(jsonStr)['response']
+        if response.getcode() == 200:
+          js = json.loads(response.read().decode("utf-8"))
+          if 'error' in js:
+            print("Error {}: {}".format(js["error"]["error_code"], js["error"]["error_msg"]))
+            sys.exit(1)
+          else:
+            return js['response']
+        else:
+          print("Network error: {}".format(response))
+          sys.exit(1)
 
 
