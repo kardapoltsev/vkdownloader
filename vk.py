@@ -21,14 +21,18 @@ from vkdownloader import VkDownloader
 def process_music(args):
   if args.action == "load":
     vk.load(args.user, args.dest)
-  elif args.action == "show":
+  elif args.action == "list":
     vk.show(args.user)
   elif args.action == "play": 
     vk.play(args.user)
+  else:
+    print("unknown action")
 
 def process_friends(args):
-  if args.action == "show":
+  if args.action == "list":
     vk.show_friends(args.user)
+  else:
+    print("unknown action")
 
 topParser = argparse.ArgumentParser()
 
