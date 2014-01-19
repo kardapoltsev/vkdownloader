@@ -201,21 +201,20 @@ class VkDownloader:
         call(["mplayer", "-playlist", playlist_file])
         
 
-
     def _call_api(self, req):
         self.auth()
         #assume, that url has params, so add additional params after &
         url = BASE_URL + req + "&access_token={atoken}".format(atoken = self.access_token)
-        response = request.urlopen(url)
-        if response.getcode() == 200:
+        try:
+          response = request.urlopen(url)
           js = json.loads(response.read().decode("utf-8"))
           if 'error' in js:
             print("Error {}: {}".format(js["error"]["error_code"], js["error"]["error_msg"]))
             sys.exit(1)
           else:
             return js['response']
-        else:
-          print("Network error: {}".format(response))
+        except urllib.error.HTTPError as e:
+          print("Network error `{} - {}`".format(e.code, e.msg))
           sys.exit(1)
 
 
