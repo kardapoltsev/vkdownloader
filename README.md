@@ -12,6 +12,8 @@ Download all music of user 111
 
 `vk music load --dest ./music --user 111`
 
+If -c option is specified, deleted music from vk will be also deleted from destination directory
+
 List your friends with user ids
 
 `vk friends show`
@@ -30,6 +32,8 @@ List your friends with user ids
 Скачать музыка пользователя 111 в директорию music
 
 `vk music load --dest ./music --user 111`
+
+С опцией -c из указанной директории будут удалены треки, удаленные с vk.com
 
 Показывает список ваших друзей с id
 
