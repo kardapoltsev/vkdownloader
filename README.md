@@ -29,7 +29,7 @@ List your friends with user ids
 
 `vk music load`
 
-Скачать музыка пользователя 111 в директорию music
+Скачать музыку пользователя 111 в директорию music
 
 `vk music load --dest ./music --user 111`
 
