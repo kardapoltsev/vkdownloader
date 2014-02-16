@@ -152,7 +152,7 @@ class VkDownloader:
             print(self.get_track_full_name(t))
 
 
-    def load(self, user, path):
+    def load(self, user, path, clean = False):
         access_token, current_user_id = self.auth()
         uid = user or self.user_id
 
@@ -172,8 +172,22 @@ class VkDownloader:
             t_name = self.get_track_full_name(t)
             print("Downloading {} of {}: {}".format(i + 1, total, t_name))
             self.download_track(t['url'], t_name)
+
+        if clean:
+            self._clean(tracks, path)
+            
         print("All music is up to date")
      
+
+    def _clean(self, tracks, path):
+        names = set(map((lambda t: self.get_track_full_name(t)), tracks))
+        files = os.listdir(path)
+        for f in files:
+            if f not in names:
+                print("Deleting {}".format(f))
+                os.remove(os.path.join(path, f))
+      
+
 
     def _create_playlist(self, tracks):
         playlist = []
@@ -217,4 +231,4 @@ class VkDownloader:
           print("Network error `{} - {}`".format(e.code, e.msg))
           sys.exit(1)
 
-
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

@@ -21,7 +21,7 @@ from vkdownloader import VkDownloader
 
 def process_music(args):
   if args.action == "load":
-    vk.load(args.user, args.dest)
+    vk.load(args.user, args.dest, args.clean)
   elif args.action == "list":
     vk.show(args.user)
   elif args.action == "play": 
@@ -47,6 +47,8 @@ friends.set_defaults(func = process_friends)
 
 music.add_argument("action", help = "music actions", choices=["list", "load", "play"])
 music.add_argument("-d", "--dest", help = "destination directory for music download, default is current dir")
+music.add_argument("-c", "--clean", dest='clean', action='store_true', help = "with this options destination directory will be cleaned")
+music.set_defaults(clean = False)
 music.set_defaults(func = process_music)
 
 try:
