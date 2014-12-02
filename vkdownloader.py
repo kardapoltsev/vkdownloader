@@ -118,8 +118,11 @@ class VkDownloader:
     def download_track(self, t_url, t_name):
         t_path = os.path.join(self.destination, t_name)
         if not os.path.exists(t_path):
-            request.urlretrieve(t_url, t_path)
-    
+            try:
+                request.urlretrieve(t_url, t_path)
+            except Error as e:
+                print("error downloading {}: {}".format(t_name, str(e)))
+                pass
 
     def auth(self):
         access_token, current_user_id = self.get_saved_auth_params()
