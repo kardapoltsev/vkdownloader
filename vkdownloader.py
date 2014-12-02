@@ -120,7 +120,7 @@ class VkDownloader:
         if not os.path.exists(t_path):
             try:
                 request.urlretrieve(t_url, t_path)
-            except Error as e:
+            except Exception as e:
                 print("error downloading {}: {}".format(t_name, str(e)))
                 pass
 
