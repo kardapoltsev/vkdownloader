@@ -98,6 +98,11 @@ class VkDownloader:
         url = "audio.get.json?uid={uid}".format(uid = user_id)
         return self._call_api(url)
 
+
+    def get_albums(self, user_id):
+        url = "audio.getAlbums.json?uid={uid}&count=100".format(uid = user_id)
+        return self._call_api(url)[1:] # drop first element since it's a count of user albums
+
      
     def get_track_full_name(self, t_data):
         return self._get_track_name(t_data) + ".mp3"
@@ -115,10 +120,13 @@ class VkDownloader:
 
 
      
-    def download_track(self, t_url, t_name):
-        t_path = os.path.join(self.destination, t_name)
-        if not os.path.exists(t_path):
-            request.urlretrieve(t_url, t_path)
+    def download_track(self, url, dest, name):
+        path = os.path.join(dest, name)
+
+        if not os.path.exists(path):
+            if not os.path.exists(dest):
+                os.makedirs(dest)
+            request.urlretrieve(url, path)
     
 
     def auth(self):
@@ -157,13 +165,11 @@ class VkDownloader:
         uid = user or self.user_id
 
         tracks = self.get_tracks_metadata(uid)
+        albums = dict(map((lambda a: (a.get("album_id"), a.get("title"))), self.get_albums(uid)))
 
         dest = os.path.expanduser(path or ".")
         if dest and not os.path.exists(dest):
             os.makedirs(dest)
-
-        self.destination = dest
-
 
         total = len(tracks)
         print("Found {} tracks for {}".format(total, uid))
@@ -171,7 +177,12 @@ class VkDownloader:
         for i, t in enumerate(tracks):
             t_name = self.get_track_full_name(t)
             print("Downloading {} of {}: {}".format(i + 1, total, t_name))
-            self.download_track(t['url'], t_name)
+
+            t_dest = dest
+            if "album" in t:
+                t_dest = os.path.join(dest, albums.get(int(t["album"]), "."))
+
+            self.download_track(t['url'], t_dest, t_name)
 
         if clean:
             self._clean(tracks, path)
