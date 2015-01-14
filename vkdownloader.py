@@ -118,7 +118,6 @@ class VkDownloader:
         full_name = re.sub(' +', ' ', full_name)
         return full_name
 
-
      
     def download_track(self, url, dest, name):
         path = os.path.join(dest, name)
@@ -126,7 +125,11 @@ class VkDownloader:
         if not os.path.exists(path):
             if not os.path.exists(dest):
                 os.makedirs(dest)
-            request.urlretrieve(url, path)
+            try:
+                request.urlretrieve(url, path)
+            except Exception as e:
+                print("error downloading {}: {}".format(name, str(e)))
+                pass
     
 
     def auth(self):
