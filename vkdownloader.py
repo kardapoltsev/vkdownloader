@@ -188,19 +188,23 @@ class VkDownloader:
             self.download_track(t['url'], t_dest, t_name)
 
         if clean:
-            self._clean(tracks, path)
+            self._clean(tracks, albums, path)
             
         print("All music is up to date")
      
 
-    def _clean(self, tracks, path):
+    def _clean(self, tracks, albums, path):
         names = set(map((lambda t: self.get_track_full_name(t)), tracks))
+        album_names = set(albums.values())
         files = os.listdir(path)
         for f in files:
-            if f not in names:
+            if f not in names and os.path.isfile(os.path.join(path, f)):
                 print("Deleting {}".format(f))
                 os.remove(os.path.join(path, f))
-      
+            elif f not in album_names and not os.path.isfile(os.path.join(path, f)):
+                print("Deleting album {}".format(f))
+                print("TODO: rm -r {}".format(f))
+                
 
 
     def _create_playlist(self, tracks):
