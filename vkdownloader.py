@@ -19,13 +19,17 @@ import pickle
 import json
 import urllib
 from urllib import request
+from urllib import parse
+
 from html.parser import HTMLParser
 from subprocess import call
 import re
 import os
+import os.path
+from os.path import join, isfile
+import shutil
 import sys
 import tempfile
-from urllib import parse
 from datetime import datetime, timedelta
 
 # id of vk.com application, that has access to audio
@@ -46,7 +50,7 @@ class VkDownloader:
             self.homedir = os.path.expanduser("~")
 
         # file, where auth data is saved
-        self.auth_file = os.path.join(self.homedir, '.vkrc')
+        self.auth_file = join(self.homedir, '.vkrc')
         token, user_id = self.auth()
         self.access_token = token
         self.user_id = user_id
@@ -120,7 +124,7 @@ class VkDownloader:
 
      
     def download_track(self, url, dest, name):
-        path = os.path.join(dest, name)
+        path = join(dest, name)
 
         if not os.path.exists(path):
             if not os.path.exists(dest):
@@ -198,12 +202,12 @@ class VkDownloader:
         album_names = set(albums.values())
         files = os.listdir(path)
         for f in files:
-            if f not in names and os.path.isfile(os.path.join(path, f)):
+            if f not in names and os.path.isfile(join(path, f)):
                 print("Deleting {}".format(f))
-                os.remove(os.path.join(path, f))
-            elif f not in album_names and not os.path.isfile(os.path.join(path, f)):
+                os.remove(join(path, f))
+            elif f not in album_names and not isfile(join(path, f)):
                 print("Deleting album {}".format(f))
-                print("TODO: rm -r {}".format(f))
+                shutil.rmtree(join(path, f))
                 
 
 
